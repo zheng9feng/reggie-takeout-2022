@@ -145,7 +145,7 @@
   font-size: 12px;
 }
 
-.navbar .head-lable {
+.navbar .head-label {
   /* position: absolute; */
   /* background: #fff; */
   color: #333333;
@@ -161,7 +161,7 @@
   float: left;
   animation: opacity 500ms ease-out 800ms forwards;
 }
-.navbar .head-lable .goBack {
+.navbar .head-label .goBack {
   border-right: solid 1px #d8dde3;
   padding-right: 14px;
   margin-right: 14px;
@@ -170,7 +170,7 @@
   cursor: pointer;
   font-weight: 400;
 }
-.navbar .head-lable .goBack img {
+.navbar .head-label .goBack img {
   position: relative;
   top: 24px;
   margin-right: 5px;
