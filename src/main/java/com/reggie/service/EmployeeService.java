@@ -26,4 +26,19 @@ public interface EmployeeService extends IService<Employee> {
      * @return
      */
     ResponseInfo<Employee> handleLogin(HttpServletRequest httpServletRequest, Employee employee);
+
+    /**
+     * 为新增员工预设初始密码
+     *
+     * @param employee
+     */
+    void setDefaultPassword(Employee employee);
+
+    /**
+     * 保存新增员工
+     *
+     * @param request
+     * @param employee
+     */
+    void saveNewEmployee(HttpServletRequest request, Employee employee);
 }

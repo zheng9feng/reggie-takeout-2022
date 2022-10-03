@@ -13,6 +13,7 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 /**
  * @author m0v1
@@ -20,6 +21,8 @@ import java.nio.charset.StandardCharsets;
  */
 @Service
 public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements EmployeeService {
+
+    public static final String DEFAULT_PASSWORD = "123456";
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -48,6 +51,23 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         updateSession(httpServletRequest, sameName);
 
         return ResponseInfo.success(sameName);
+    }
+
+    @Override
+    public void setDefaultPassword(Employee employee) {
+        employee.setPassword(DigestUtils.md5DigestAsHex(DEFAULT_PASSWORD.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Override
+    public void saveNewEmployee(HttpServletRequest request, Employee employee) {
+        Long employeeID = ((Employee) request.getSession().getAttribute("employee")).getId();
+
+        employee.setCreateUser(employeeID);
+        employee.setUpdateUser(employeeID);
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        employeeMapper.insert(employee);
     }
 
     /**
