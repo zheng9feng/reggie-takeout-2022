@@ -62,7 +62,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Override
     public void saveNewEmployee(HttpServletRequest request, Employee employee) {
-        Long employeeID = ((Long) request.getSession().getAttribute("employee"));
+        Long employeeID = (Long) request.getSession().getAttribute("employee");
 
         employee.setCreateUser(employeeID);
         employee.setUpdateUser(employeeID);
@@ -80,7 +80,9 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         // 构造条件构造器
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         // 添加过滤条件
-        queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name);
+        queryWrapper.like(StringUtils.isNotEmpty(name),
+                Employee::getName,
+                name);
         // 添加排序添加
         queryWrapper.orderByDesc(Employee::getUpdateTime);
 
