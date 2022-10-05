@@ -1,14 +1,12 @@
 package com.reggie.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.reggie.common.ResponseInfo;
 import com.reggie.entity.Employee;
 import com.reggie.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,4 +57,11 @@ public class EmployeeController {
         return ResponseInfo.success("添加员工成功");
     }
 
+    @GetMapping("/page")
+    public ResponseInfo<Page> listEmployee(int page,
+                                           int pageSize,
+                                           String name) {
+        log.info("page = {}, pageSize = {}, name = {}", page, pageSize, name);
+        return employeeService.listByPage(page, pageSize, name);
+    }
 }

@@ -1,5 +1,6 @@
 package com.reggie.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.reggie.common.ResponseInfo;
 import com.reggie.entity.Employee;
@@ -41,4 +42,14 @@ public interface EmployeeService extends IService<Employee> {
      * @param employee
      */
     void saveNewEmployee(HttpServletRequest request, Employee employee);
+
+    /**
+     * 分页查询
+     *
+     * @param page     当前页
+     * @param pageSize 每页行数
+     * @param name     员工名称(用于模糊查询)
+     * @return
+     */
+    ResponseInfo<Page> listByPage(int page, int pageSize, String name);
 }
