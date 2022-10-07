@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 /**
  * @author m0v1
@@ -63,5 +64,21 @@ public class EmployeeController {
                                            String name) {
         log.info("page = {}, pageSize = {}, name = {}", page, pageSize, name);
         return employeeService.listByPage(page, pageSize, name);
+    }
+
+    /**
+     * 用户启用/禁用状态更新
+     *
+     * @param request
+     * @param employee
+     * @return
+     */
+    @PutMapping
+    public ResponseInfo<String> update(HttpServletRequest request, @RequestBody Employee employee) {
+        Long empID = (Long) request.getSession().getAttribute("employee");
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(empID);
+        employeeService.updateById(employee);
+        return ResponseInfo.success("员工修改信息成功");
     }
 }
