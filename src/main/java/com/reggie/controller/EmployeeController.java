@@ -46,6 +46,13 @@ public class EmployeeController {
         return ResponseInfo.success("退出成功！");
     }
 
+    /**
+     * 新增员工
+     *
+     * @param httpServletRequest
+     * @param employee
+     * @return
+     */
     @PostMapping
     public ResponseInfo<String> addEmployee(HttpServletRequest httpServletRequest, @RequestBody Employee employee) {
         log.info("新增员工的信息：{}", employee.toString());
@@ -61,7 +68,7 @@ public class EmployeeController {
     /**
      * 根据员工ID查询员工信息
      *
-     * @param id
+     * @param id 员工ID
      * @return
      */
     @GetMapping("/{id}")
@@ -75,6 +82,14 @@ public class EmployeeController {
         return ResponseInfo.error("没有查询到该员工的信息!");
     }
 
+    /**
+     * 分页查询员工信息
+     *
+     * @param page     当前页
+     * @param pageSize 每页行数
+     * @param name     员工名称
+     * @return
+     */
     @GetMapping("/page")
     public ResponseInfo<Page> listEmployee(int page,
                                            int pageSize,
