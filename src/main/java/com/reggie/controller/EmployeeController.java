@@ -58,6 +58,23 @@ public class EmployeeController {
         return ResponseInfo.success("添加员工成功");
     }
 
+    /**
+     * 根据员工ID查询员工信息
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public ResponseInfo<Employee> getEmployeeById(@PathVariable Long id) {
+        log.info("根据员工ID查询员工信息...");
+        Employee employee = employeeService.getById(id);
+        if (employee != null) {
+            return ResponseInfo.success(employee);
+        }
+
+        return ResponseInfo.error("没有查询到该员工的信息!");
+    }
+
     @GetMapping("/page")
     public ResponseInfo<Page> listEmployee(int page,
                                            int pageSize,
