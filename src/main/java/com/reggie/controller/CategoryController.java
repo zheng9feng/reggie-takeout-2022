@@ -6,9 +6,7 @@ import com.reggie.entity.Category;
 import com.reggie.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 分类管理
@@ -35,5 +33,18 @@ public class CategoryController {
     public ResponseInfo<Page<Category>> listCategory(int page, int pageSize) {
         log.info("分类信息分页查询:page = {}, pageSize = {}.", page, pageSize);
         return categoryService.listByPage(page, pageSize);
+    }
+
+    /**
+     * 新增分类
+     *
+     * @param category
+     * @return
+     */
+    @PostMapping
+    public ResponseInfo<String> addCategory(@RequestBody Category category) {
+        log.info("新增分类:{}", category);
+        categoryService.save(category);
+        return ResponseInfo.success("新增分类成功");
     }
 }
