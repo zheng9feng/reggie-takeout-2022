@@ -90,9 +90,9 @@ public class EmployeeController {
      * @return
      */
     @GetMapping("/page")
-    public ResponseInfo<Page> listEmployee(int page,
-                                           int pageSize,
-                                           String name) {
+    public ResponseInfo<Page<Employee>> listEmployee(int page,
+                                                     int pageSize,
+                                                     String name) {
         log.info("page = {}, pageSize = {}, name = {}", page, pageSize, name);
         return employeeService.listByPage(page, pageSize, name);
     }

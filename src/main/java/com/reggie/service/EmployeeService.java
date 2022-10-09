@@ -51,5 +51,5 @@ public interface EmployeeService extends IService<Employee> {
      * @param name     员工名称(用于模糊查询)
      * @return
      */
-    ResponseInfo<Page> listByPage(int page, int pageSize, String name);
+    ResponseInfo<Page<Employee>> listByPage(int page, int pageSize, String name);
 }
