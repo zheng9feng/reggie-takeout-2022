@@ -24,6 +24,13 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * 分页查询分类信息
+     *
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/page")
     public ResponseInfo<Page<Category>> listCategory(int page, int pageSize) {
         log.info("分类信息分页查询:page = {}, pageSize = {}.", page, pageSize);
