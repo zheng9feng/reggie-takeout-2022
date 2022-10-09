@@ -15,7 +15,6 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 
 /**
  * @author m0v1
@@ -63,12 +62,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public void saveNewEmployee(HttpServletRequest request, Employee employee) {
         Long employeeID = (Long) request.getSession().getAttribute("employee");
-
-        employee.setCreateUser(employeeID);
-        employee.setUpdateUser(employeeID);
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
         employeeMapper.insert(employee);
     }
 

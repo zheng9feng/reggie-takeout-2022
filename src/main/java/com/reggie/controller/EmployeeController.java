@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
 /**
  * @author m0v1
@@ -108,8 +107,6 @@ public class EmployeeController {
     @PutMapping
     public ResponseInfo<String> update(HttpServletRequest request, @RequestBody Employee employee) {
         Long empID = (Long) request.getSession().getAttribute("employee");
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(empID);
         employeeService.updateById(employee);
         return ResponseInfo.success("员工修改信息成功");
     }
