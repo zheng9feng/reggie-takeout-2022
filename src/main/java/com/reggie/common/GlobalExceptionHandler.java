@@ -31,4 +31,11 @@ public class GlobalExceptionHandler {
         }
         return ResponseInfo.error(warn);
     }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseInfo<String> customExceptionHandler(CustomException customException) {
+        log.error(customException.getMessage());
+
+        return ResponseInfo.error(customException.getMessage());
+    }
 }

@@ -21,4 +21,11 @@ public interface CategoryService extends IService<Category> {
      * @return
      */
     ResponseInfo<Page<Category>> listByPage(int page, int pageSize);
+
+    /**
+     * 删除分类
+     *
+     * @param categoryID 分类ID
+     */
+    void deleteCategoryById(Long categoryID);
 }

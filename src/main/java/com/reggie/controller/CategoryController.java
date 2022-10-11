@@ -47,4 +47,18 @@ public class CategoryController {
         categoryService.save(category);
         return ResponseInfo.success("新增分类成功");
     }
+
+    /**
+     * 删除分类信息
+     *
+     * @param categoryID 分类ID
+     * @return
+     */
+    @DeleteMapping
+    public ResponseInfo<String> delete(Long categoryID) {
+        log.info("将要删除的分类id:{}", categoryID);
+
+        categoryService.deleteCategoryById(categoryID);
+        return ResponseInfo.success("分类信息删除成功");
+    }
 }
