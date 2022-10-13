@@ -26,6 +26,9 @@ import java.util.UUID;
 @RestController
 public class CommonController {
 
+    /**
+     * 在配置文件指定文件存储路径
+     */
     @Value("${reggie.file.path}")
     private String basePath;
 
