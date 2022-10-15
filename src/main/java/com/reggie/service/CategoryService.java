@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.reggie.common.ResponseInfo;
 import com.reggie.entity.Category;
 
+import java.util.List;
+
 /**
  * 分类服务
  *
@@ -28,4 +30,12 @@ public interface CategoryService extends IService<Category> {
      * @param categoryID 分类ID
      */
     void deleteCategoryById(Long categoryID);
+
+    /**
+     * 获取菜品分类列表
+     *
+     * @param category
+     * @return
+     */
+    ResponseInfo<List<Category>> listCategory(Category category);
 }

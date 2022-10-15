@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 分类管理
  *
@@ -60,5 +62,16 @@ public class CategoryController {
 
         categoryService.deleteCategoryById(categoryID);
         return ResponseInfo.success("分类信息删除成功");
+    }
+
+    /**
+     * 获取菜品分类列表
+     *
+     * @param category
+     * @return
+     */
+    @GetMapping("/list")
+    public ResponseInfo<List<Category>> listCategory(Category category) {
+        return categoryService.listCategory(category);
     }
 }

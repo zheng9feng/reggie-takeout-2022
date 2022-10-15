@@ -15,6 +15,8 @@ import com.reggie.service.SetMealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author m0v1
  * @date 2022年10月10日 00:58
@@ -62,5 +64,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
         //正常删除
         removeById(categoryID);
+    }
+
+    @Override
+    public ResponseInfo<List<Category>> listCategory(Category category) {
+        //条件构造器
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        //添加条件
+        queryWrapper.eq(category.getType() != null, Category::getType, category.getType());
+        //添加排序条件
+        queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+        //查询数据
+        List<Category> list = list(queryWrapper);
+        //返回数据
+        return ResponseInfo.success(list);
     }
 }
