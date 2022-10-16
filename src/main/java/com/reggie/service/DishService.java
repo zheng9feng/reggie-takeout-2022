@@ -55,4 +55,11 @@ public interface DishService extends IService<Dish> {
      * @param dishIds 菜品id集合
      */
     void updateStatus(String status, List<String> dishIds);
+
+    /**
+     * 逻辑删除菜品
+     *
+     * @param dishIds 菜品id集合
+     */
+    void deleteDishByIds(List<String> dishIds);
 }

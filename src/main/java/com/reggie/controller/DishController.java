@@ -1,12 +1,13 @@
 package com.reggie.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.reggie.common.CustomException;
 import com.reggie.common.ResponseInfo;
 import com.reggie.dto.DishDto;
-import com.reggie.service.CategoryService;
 import com.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +22,6 @@ import java.util.List;
 public class DishController {
     @Autowired
     private DishService dishService;
-
-    @Autowired
-    private CategoryService categoryService;
 
     @PostMapping
     public ResponseInfo<String> save(@RequestBody DishDto dishDto) {
@@ -63,6 +61,23 @@ public class DishController {
 
         return ResponseInfo.success("新增菜品成功");
     }
+
+    /**
+     * 删除菜品
+     *
+     * @param dishIds
+     * @return
+     */
+    @DeleteMapping
+    public ResponseInfo<String> delete(@RequestParam("ids") List<String> dishIds) {
+        if (CollectionUtils.isEmpty(dishIds)) {
+            throw new CustomException("未选定待删除的菜品!");
+        }
+
+        dishService.deleteDishByIds(dishIds);
+        return ResponseInfo.success("菜品删除成功");
+    }
+
 
     /**
      * 菜品停启售

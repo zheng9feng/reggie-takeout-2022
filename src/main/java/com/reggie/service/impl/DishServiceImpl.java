@@ -62,6 +62,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         //添加条件
         queryWrapper.like(name != null, Dish::getName, name);
+        // 过滤逻辑删除 0-未删除
+        queryWrapper.eq(Dish::getIsDeleted, 0);
         queryWrapper.orderByDesc(Dish::getUpdateTime);
         //执行分页查询
         page(pageInfo, queryWrapper);
@@ -136,6 +138,17 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             UpdateWrapper<Dish> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", dishId);
             updateWrapper.set("status", status);
+            update(updateWrapper);
+        }
+    }
+
+    @Override
+    public void deleteDishByIds(List<String> dishIds) {
+        // 逻辑删除
+        for (String dishId : dishIds) {
+            UpdateWrapper<Dish> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", dishId);
+            updateWrapper.set("is_deleted", "1");
             update(updateWrapper);
         }
     }
