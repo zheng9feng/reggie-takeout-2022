@@ -1,7 +1,7 @@
 package com.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.reggie.common.ResponseInfo;
@@ -132,24 +132,21 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     @Transactional
     @Override
     public void updateStatus(String status, List<String> dishIds) {
-        // TODO: 2022/10/16 使用批量更新替换逐个更新
-        for (String dishId : dishIds) {
-            // 根据条件字段更新部分字段:根据菜品id更新菜品状态
-            UpdateWrapper<Dish> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", dishId);
-            updateWrapper.set("status", status);
-            update(updateWrapper);
-        }
+        // 根据条件字段更新部分字段:根据菜品id更新菜品状态
+        LambdaUpdateWrapper<Dish> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.in(Dish::getId, dishIds);
+        updateWrapper.set(Dish::getStatus, status);
+
+        update(updateWrapper);
     }
 
     @Override
     public void deleteDishByIds(List<String> dishIds) {
         // 逻辑删除
-        for (String dishId : dishIds) {
-            UpdateWrapper<Dish> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", dishId);
-            updateWrapper.set("is_deleted", "1");
-            update(updateWrapper);
-        }
+        LambdaUpdateWrapper<Dish> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.in(Dish::getId, dishIds);
+        updateWrapper.set(Dish::getIsDeleted, "1");
+
+        update(updateWrapper);
     }
 }
