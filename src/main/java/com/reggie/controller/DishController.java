@@ -1,9 +1,11 @@
 package com.reggie.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.reggie.common.CustomException;
 import com.reggie.common.ResponseInfo;
 import com.reggie.dto.DishDto;
+import com.reggie.entity.Dish;
 import com.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,5 +95,24 @@ public class DishController {
 
         String message = "0".equals(status) ? "菜品已停售" : "菜品已起售";
         return ResponseInfo.success(message);
+    }
+
+    /**
+     * 根据菜品列表查询
+     *
+     * @param dish 菜品信息
+     * @return
+     */
+    @GetMapping("/list")
+    public ResponseInfo<List<Dish>> list(Dish dish) {
+        //构造查询条件
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
+        //添加条件，查询状态为1（1为起售，0为停售）的菜品
+        queryWrapper.eq(Dish::getStatus, 1);
+
+        List<Dish> dishList = dishService.list(queryWrapper);
+        //添加排序条件
+        return ResponseInfo.success(dishList);
     }
 }
