@@ -58,18 +58,14 @@ public class SetMeal implements Serializable {
      */
     private String image;
 
-
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-
     @TableField(fill = FieldFill.INSERT)
     private Long createUser;
-
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
