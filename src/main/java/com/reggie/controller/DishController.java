@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author m0v1
  * @date 2022年10月13日 08:12
@@ -32,7 +34,7 @@ public class DishController {
     }
 
     @GetMapping("/page")
-    public ResponseInfo<Page> listDishDto(int page, int pageSize, String name) {
+    public ResponseInfo<Page<DishDto>> listDishDto(int page, int pageSize, String name) {
 
         return dishService.listByPage(page, pageSize, name);
     }
@@ -60,5 +62,21 @@ public class DishController {
         dishService.updateWithFlavor(dishDto);
 
         return ResponseInfo.success("新增菜品成功");
+    }
+
+    /**
+     * 菜品停启售
+     *
+     * @param status
+     * @param dishIds
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public ResponseInfo<String> stopSell(@PathVariable String status, @RequestParam("ids") List<String> dishIds) {
+        log.info("菜品停启售:status={},dishIds={}", status, dishIds);
+        dishService.updateStatus(status, dishIds);
+
+        String message = "0".equals(status) ? "菜品已停售" : "菜品已起售";
+        return ResponseInfo.success(message);
     }
 }

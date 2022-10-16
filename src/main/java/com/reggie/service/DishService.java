@@ -6,6 +6,8 @@ import com.reggie.common.ResponseInfo;
 import com.reggie.dto.DishDto;
 import com.reggie.entity.Dish;
 
+import java.util.List;
+
 /**
  * 菜品服务
  *
@@ -29,7 +31,7 @@ public interface DishService extends IService<Dish> {
      * @param name
      * @return
      */
-    ResponseInfo<Page> listByPage(int page, int pageSize, String name);
+    ResponseInfo<Page<DishDto>> listByPage(int page, int pageSize, String name);
 
     /**
      * 获取菜品信息
@@ -46,5 +48,11 @@ public interface DishService extends IService<Dish> {
      */
     void updateWithFlavor(DishDto dishDto);
 
-
+    /**
+     * 更新菜品状态
+     *
+     * @param status  0-停售 1-起售
+     * @param dishIds 菜品id集合
+     */
+    void updateStatus(String status, List<String> dishIds);
 }

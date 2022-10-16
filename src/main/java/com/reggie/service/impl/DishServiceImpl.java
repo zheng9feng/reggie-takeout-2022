@@ -1,6 +1,7 @@
 package com.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.reggie.common.ResponseInfo;
@@ -53,7 +54,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     }
 
     @Override
-    public ResponseInfo<Page> listByPage(int page, int pageSize, String name) {
+    public ResponseInfo<Page<DishDto>> listByPage(int page, int pageSize, String name) {
         //构造分页构造器对象
         Page<Dish> pageInfo = new Page<>(page, pageSize);
         Page<DishDto> dishDtoPage = new Page<>();
@@ -124,5 +125,18 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
         //将数据批量保存到dish_flavor数据库
         dishFlavorService.saveBatch(flavors);
+    }
+
+    @Transactional
+    @Override
+    public void updateStatus(String status, List<String> dishIds) {
+        // TODO: 2022/10/16 使用批量更新替换逐个更新
+        for (String dishId : dishIds) {
+            // 根据条件字段更新部分字段:根据菜品id更新菜品状态
+            UpdateWrapper<Dish> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", dishId);
+            updateWrapper.set("status", status);
+            update(updateWrapper);
+        }
     }
 }
