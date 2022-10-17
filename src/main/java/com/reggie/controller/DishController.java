@@ -110,6 +110,8 @@ public class DishController {
         queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
         //添加条件，查询状态为1（1为起售，0为停售）的菜品
         queryWrapper.eq(Dish::getStatus, 1);
+        // 过滤掉逻辑删除的数据
+        queryWrapper.eq(Dish::getIsDeleted, 0);
 
         List<Dish> dishList = dishService.list(queryWrapper);
         //添加排序条件
