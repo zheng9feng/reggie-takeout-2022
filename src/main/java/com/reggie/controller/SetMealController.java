@@ -1,8 +1,10 @@
 package com.reggie.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.reggie.common.ResponseInfo;
 import com.reggie.dto.SetMealDto;
+import com.reggie.entity.SetMeal;
 import com.reggie.service.SetMealDishService;
 import com.reggie.service.SetMealService;
 import lombok.extern.slf4j.Slf4j;
@@ -86,5 +88,26 @@ public class SetMealController {
         setMealService.updateSetMeal(setMealDto);
 
         return ResponseInfo.success("更新套餐成功!");
+    }
+
+    /**
+     * 根据菜品分类id查询套餐
+     *
+     * @param setmeal
+     * @return
+     */
+    @GetMapping("/list")
+    public ResponseInfo<List<SetMeal>> list(SetMeal setmeal) {
+        //创建条件构造器
+        LambdaQueryWrapper<SetMeal> queryWrapper = new LambdaQueryWrapper<>();
+        //添加条件
+        queryWrapper.eq(setmeal.getCategoryId() != null, SetMeal::getCategoryId, setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null, SetMeal::getStatus, setmeal.getStatus());
+        //排序
+        queryWrapper.orderByDesc(SetMeal::getUpdateTime);
+
+        List<SetMeal> list = setMealService.list(queryWrapper);
+
+        return ResponseInfo.success(list);
     }
 }
