@@ -128,6 +128,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             return null;
         }
 
+        // TODO: 2022/10/25 循环查库待优化:
         List<OrderDto> orderDtoList = records.stream().map(item -> {
             OrderDto orderDto = new OrderDto();
 
