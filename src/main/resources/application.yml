@@ -20,3 +20,8 @@ mybatis-plus:
     db-config:
       #主键策略：ASSIGN_ID（雪花算法）
       id-type: ASSIGN_ID
+
+reggie:
+  file:
+    # 图片资源存放路径 目前先存放在项目目录下
+    path: /Users/m0v1/IdeaProjects/reggie-takeout/imgs/
