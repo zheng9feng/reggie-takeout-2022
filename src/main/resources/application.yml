@@ -8,9 +8,24 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://remote-srv-dns:13306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: reggie
       password: wAfeATPxYR4SCpbz
+  redis:
+    host: remote-srv-dns
+    port: 16379
+    jedis:
+      pool:
+        # 最大连接数
+        max-active: 8
+        # 连接池中的最大空闲连接
+        max-idle: 4
+        # 连接池中最大阻塞等待时间
+        max-wait: 1ms
+        # 连接池中的最小空闲连接
+        min-idle: 0
+    # 默认使用0号数据库
+    database: 0
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
