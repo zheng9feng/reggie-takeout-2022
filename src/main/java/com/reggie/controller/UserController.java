@@ -9,12 +9,14 @@ import com.reggie.util.ValidateCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author m0v1
@@ -27,16 +29,17 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     /**
      * 获取验证码
      *
-     * @param user    登录用户
-     * @param session 当前会话
+     * @param user 登录用户
      * @return
      */
     @PostMapping("/sendMsg")
-    public ResponseInfo<String> sendMsg(@RequestBody User user, HttpSession session) {
+    public ResponseInfo<String> sendMsg(@RequestBody User user) {
         log.info("获取验证码,user={}.", user);
         //获取手机号
         String phone = user.getPhone();
@@ -49,8 +52,8 @@ public class UserController {
             //调用阿里云提供的短信服务API完成短信发送
             //SMSUtils.sendMessage("瑞吉外卖","",phone,code);
 
-            //需要将生成的验证码保存到session
-            session.setAttribute(phone, code);
+            // 将验证码保存到redis中,并且设置有效期为5分钟
+            redisTemplate.opsForValue().set(phone, code, 5, TimeUnit.MINUTES);
             return ResponseInfo.success("短信发送成功");
         }
         return ResponseInfo.error("短信发送失败");
@@ -72,10 +75,10 @@ public class UserController {
         // 验证码
         String code = loginDto.getCode();
 
-        //从session中获取保存的验证码
-        String codeInSession = session.getAttribute(phone).toString();
+        // 从缓存中获取验证码
+        String cachedPhone = redisTemplate.opsForValue().get(phone);
         //进行验证码的对比（页面提交的验证码和session中保存的验证码）
-        if (StringUtils.equals(code, codeInSession)) {
+        if (StringUtils.equals(code, cachedPhone)) {
             //如果比对成功，则登录成功
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getPhone, phone);
