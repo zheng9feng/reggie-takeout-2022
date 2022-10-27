@@ -15,6 +15,7 @@ import com.reggie.service.DishFlavorService;
 import com.reggie.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +33,15 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     DishFlavorService dishFlavorService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    RedisTemplate redisTemplate;
 
 
     @Transactional
     @Override
     public void saveWithFlavor(DishDto dishDto) {
+        // 清空缓存
+        cleanCache(dishDto);
         //保存菜品的基本信息到菜品表
         super.save(dishDto);
         //获取菜品id
@@ -107,6 +112,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     @Override
     public void updateWithFlavor(DishDto dishDto) {
+        // 清空缓存
+        cleanCache(dishDto);
         //根据id修改菜品的基本信息
         super.updateById(dishDto);
 
@@ -148,5 +155,15 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         updateWrapper.set(Dish::getIsDeleted, "1");
 
         update(updateWrapper);
+    }
+
+    /**
+     * 清空菜品缓存
+     *
+     * @param dishDto
+     */
+    private void cleanCache(DishDto dishDto) {
+        String key = "dish:" + dishDto.getCategoryId() + ":" + dishDto.getStatus();
+        redisTemplate.delete(key);
     }
 }
