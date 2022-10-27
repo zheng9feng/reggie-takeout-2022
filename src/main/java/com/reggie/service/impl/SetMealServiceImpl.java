@@ -17,10 +17,12 @@ import com.reggie.service.SetMealService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +36,8 @@ public class SetMealServiceImpl extends ServiceImpl<SetMealMapper, SetMeal> impl
     CategoryService categoryService;
     @Autowired
     SetMealDishService setMealDishService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public ResponseInfo<Page<SetMealDto>> listByPage(int page, int pageSize, String setMealName) {
@@ -72,6 +76,7 @@ public class SetMealServiceImpl extends ServiceImpl<SetMealMapper, SetMeal> impl
     @Transactional
     @Override
     public void deleteSetMealByIds(List<Long> ids) {
+        cleanCache();
         // 判断套餐状态,如果套餐处于启售状态,则不能删除
         LambdaQueryWrapper<SetMeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SetMeal::getStatus, "1");
@@ -133,7 +138,17 @@ public class SetMealServiceImpl extends ServiceImpl<SetMealMapper, SetMeal> impl
     @Transactional
     @Override
     public void updateSetMeal(SetMealDto setMealDto) {
+        cleanCache();
         updateById(setMealDto);
         setMealDishService.updateSetMealDish(setMealDto);
+    }
+
+    /**
+     * 全量清空套餐缓存的数据
+     */
+    private void cleanCache() {
+        String keyPattern = "setmeal:*";
+        Set keys = redisTemplate.keys(keyPattern);
+        redisTemplate.delete(keys);
     }
 }

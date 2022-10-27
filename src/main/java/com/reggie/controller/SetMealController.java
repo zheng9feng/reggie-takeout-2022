@@ -9,9 +9,11 @@ import com.reggie.service.SetMealDishService;
 import com.reggie.service.SetMealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 套餐管理控制器
@@ -28,6 +30,8 @@ public class SetMealController {
     SetMealService setMealService;
     @Autowired
     SetMealDishService setMealDishService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     /**
@@ -98,6 +102,11 @@ public class SetMealController {
      */
     @GetMapping("/list")
     public ResponseInfo<List<SetMeal>> list(SetMeal setmeal) {
+        String key = "setmeal" + ":" + setmeal.getCategoryId() + ":" + setmeal.getStatus();
+        List<SetMeal> setMeals = (List<SetMeal>) redisTemplate.opsForValue().get(key);
+        if (setMeals != null) {
+            return ResponseInfo.success(setMeals);
+        }
         //创建条件构造器
         LambdaQueryWrapper<SetMeal> queryWrapper = new LambdaQueryWrapper<>();
         //添加条件
@@ -107,6 +116,8 @@ public class SetMealController {
         queryWrapper.orderByDesc(SetMeal::getUpdateTime);
 
         List<SetMeal> list = setMealService.list(queryWrapper);
+
+        redisTemplate.opsForValue().set(key, list, 60, TimeUnit.MINUTES);
 
         return ResponseInfo.success(list);
     }
