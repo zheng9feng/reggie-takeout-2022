@@ -15,6 +15,7 @@ import com.reggie.service.DishFlavorService;
 import com.reggie.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +40,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public void saveWithFlavor(DishDto dishDto) {
-        // 清空缓存
-        cleanCache(dishDto);
         //保存菜品的基本信息到菜品表
         super.save(dishDto);
         //获取菜品id
@@ -111,9 +111,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     }
 
     @Override
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public void updateWithFlavor(DishDto dishDto) {
-        // 清空缓存
-        cleanCache(dishDto);
         //根据id修改菜品的基本信息
         super.updateById(dishDto);
 
@@ -138,6 +137,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public void updateStatus(String status, List<String> dishIds) {
         // 根据条件字段更新部分字段:根据菜品id更新菜品状态
         LambdaUpdateWrapper<Dish> updateWrapper = new LambdaUpdateWrapper<>();
@@ -148,6 +148,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     }
 
     @Override
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public void deleteDishByIds(List<String> dishIds) {
         // 逻辑删除
         LambdaUpdateWrapper<Dish> updateWrapper = new LambdaUpdateWrapper<>();
@@ -157,13 +158,4 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         update(updateWrapper);
     }
 
-    /**
-     * 清空菜品缓存
-     *
-     * @param dishDto
-     */
-    private void cleanCache(DishDto dishDto) {
-        String key = "dish:" + dishDto.getCategoryId() + ":" + dishDto.getStatus();
-        redisTemplate.delete(key);
-    }
 }

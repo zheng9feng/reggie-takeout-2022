@@ -2,6 +2,7 @@ package com.reggie.common;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  * @date 2022年09月30日 22:32
  */
 @Data
-public class ResponseInfo<T> {
+public class ResponseInfo<T> implements Serializable {
 
     /**
      * 编码：1成功，0和其它数字为失败

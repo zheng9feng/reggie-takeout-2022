@@ -14,12 +14,12 @@ import com.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -112,18 +112,20 @@ public class DishController {
     }
 
     /**
-     * 根据菜品列表查询
+     * 根据分类id查询一级菜品分类下的菜品列表
      *
      * @param dish 菜品信息
      * @return
      */
     @GetMapping("/list")
+    // cacheNames/value表示缓存数据的一级分类
+    // key即为缓存数据的二级分类
+    // unless表示不缓存的条件
+    @Cacheable(cacheNames = "dishCache",
+            key = "'dish:' + #dish.categoryId + ':' + #dish.status",
+            unless = "#result == null"
+    )
     public ResponseInfo<List<DishDto>> list(Dish dish) {
-        String key = "dish:" + dish.getCategoryId() + ":" + dish.getStatus();
-        List<DishDto> dishDtos = (List<DishDto>) redisTemplate.opsForValue().get(key);
-        if (dishDtos != null) {
-            return ResponseInfo.success(dishDtos);
-        }
         //构造查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
@@ -157,9 +159,6 @@ public class DishController {
             return dishDto;
 
         }).collect(Collectors.toList());
-
-        // 存入缓存
-        redisTemplate.opsForValue().set(key, dishDtoList, 60, TimeUnit.MINUTES);
 
         return ResponseInfo.success(dishDtoList);
     }
