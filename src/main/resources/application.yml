@@ -44,3 +44,8 @@ reggie:
   file:
     # 图片资源存放路径 目前先存放在项目目录下
     path: /Users/m0v1/IdeaProjects/reggie-takeout/imgs/
+
+# 配置日志级别
+logging:
+  level:
+    root: debug
