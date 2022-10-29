@@ -9,11 +9,11 @@ import com.reggie.service.SetMealDishService;
 import com.reggie.service.SetMealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 套餐管理控制器
@@ -30,8 +30,6 @@ public class SetMealController {
     SetMealService setMealService;
     @Autowired
     SetMealDishService setMealDishService;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
 
     /**
@@ -49,8 +47,12 @@ public class SetMealController {
     }
 
     @DeleteMapping
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     public ResponseInfo<String> delete(@RequestParam List<Long> ids) {
         log.info("套餐管理--套餐删除:ids={}.", ids);
+        if (log.isDebugEnabled()) {
+            log.debug("[套餐缓存]-删除套餐时删除已缓存的根据分类id查询到的套餐数据");
+        }
         setMealService.deleteSetMealByIds(ids);
 
         return ResponseInfo.success("删除套餐成功!");
@@ -63,9 +65,13 @@ public class SetMealController {
      * @param setMealIds 套餐id集合
      * @return
      */
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     @PostMapping("/status/{status}")
     public ResponseInfo<String> stopSell(@PathVariable String status, @RequestParam("ids") List<String> setMealIds) {
         log.info("套餐停启售:status={},setMealIds={}", status, setMealIds);
+        if (log.isDebugEnabled()) {
+            log.debug("[套餐缓存]-更新套餐停/启售状态时删除已缓存的根据分类id查询到的套餐数据");
+        }
         setMealService.updateStatus(status, setMealIds);
 
         String message = "0".equals(status) ? "套餐已停售" : "套餐已起售";
@@ -73,7 +79,11 @@ public class SetMealController {
     }
 
     @PostMapping
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     public ResponseInfo<String> addSetMeal(@RequestBody SetMealDto setMealDto) {
+        if (log.isDebugEnabled()) {
+            log.debug("[套餐缓存]-新增套餐时删除已缓存的根据分类id查询到的套餐数据");
+        }
         log.info("新增套餐,setMealDto:{}", setMealDto);
         setMealService.addSetMeal(setMealDto);
 
@@ -87,7 +97,11 @@ public class SetMealController {
     }
 
     @PutMapping
+    @CacheEvict(cacheNames = "setMealCache", allEntries = true)
     public ResponseInfo<String> updateSetMeal(@RequestBody SetMealDto setMealDto) {
+        if (log.isDebugEnabled()) {
+            log.debug("[套餐缓存]-更新套餐时删除已缓存的根据分类id查询到的套餐数据");
+        }
         log.info("更新套餐,setMealDto:{}", setMealDto);
         setMealService.updateSetMeal(setMealDto);
 
@@ -101,11 +115,13 @@ public class SetMealController {
      * @return
      */
     @GetMapping("/list")
+    @Cacheable(cacheNames = "setMealCache",
+            key = "'setmeal:' + #setmeal.categoryId + #setmeal.status",
+            unless = "#result == null"
+    )
     public ResponseInfo<List<SetMeal>> list(SetMeal setmeal) {
-        String key = "setmeal" + ":" + setmeal.getCategoryId() + ":" + setmeal.getStatus();
-        List<SetMeal> setMeals = (List<SetMeal>) redisTemplate.opsForValue().get(key);
-        if (setMeals != null) {
-            return ResponseInfo.success(setMeals);
+        if (log.isDebugEnabled()) {
+            log.debug("[套餐缓存]-缓存根据菜品分类id查询套餐");
         }
         //创建条件构造器
         LambdaQueryWrapper<SetMeal> queryWrapper = new LambdaQueryWrapper<>();
@@ -116,8 +132,6 @@ public class SetMealController {
         queryWrapper.orderByDesc(SetMeal::getUpdateTime);
 
         List<SetMeal> list = setMealService.list(queryWrapper);
-
-        redisTemplate.opsForValue().set(key, list, 60, TimeUnit.MINUTES);
 
         return ResponseInfo.success(list);
     }
