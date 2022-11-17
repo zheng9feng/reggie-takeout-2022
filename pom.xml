@@ -85,6 +85,8 @@
         </dependency>
     </dependencies>
     <build>
+        <!--指定包名(不包括.jar后缀) reggie-1.0-SNAPSHOT-->
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
